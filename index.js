@@ -32,12 +32,20 @@ app.post('/webhook/', function(req, res) {
         var field      = changes[0].field;//feed
         if(field == "feed"){
             var item_type  = changes[0].value.item;//comment
+	    console.log(req.body);
+	    console.log("---------------------");
+	    console.log(changes[0].value);
+	    console.log("*********************");
             if(item_type == "comment"){
                 var sender     = changes[0].value.sender_name;
                 var comment_id = changes[0].value.comment_id;
                 var post_id    = changes[0].value.post_id;
                 var message    = changes[0].value.message;
-                sendText(sender, comment_id);
+		var email = 0;
+		if(message.indexOf("@")> -1){
+		  email = 1;
+		}
+                sendText(sender, comment_id, email);
                 console.log('Everything looks fine');
             }
         }
@@ -49,9 +57,13 @@ app.post('/webhook/', function(req, res) {
 
 var token = "EAALp6npgAb0BADEZB6unhZCw4uZCerwQPC5OlcU13ixY5mXU0swqUh1muihCUdWBw7QUIj5uOffUjCDY3PyoSNjtJmOHQmFd59mif7SHDmE4w9nJG3LDYH8WvJRlnMltSxbhszVMsqbZAWZBDmi9CAt1P0qvnxMZAjo58WXesGOwZDZD";
 
-function sendText(sender_name, comment_id){
+function sendText(sender_name, comment_id, email){
     var randomNumber = random(0,4);
-    var  messageData = messages[randomNumber].message1 + sender_name + messages[randomNumber].message2;
+    if(email == 1){
+      var messageData = sender_name + "! Te enviaremos mas informacion a tu correo. :)"
+    }else{
+      var  messageData = messages[randomNumber].message1 + sender_name + messages[randomNumber].message2;
+    }
     request({
         url: "https://graph.facebook.com/" + comment_id + "/comments",
         qs: {access_token: token},
