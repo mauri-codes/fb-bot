@@ -34,10 +34,31 @@ app.post('/webhook/', function(req, res) {
   console.log("post id: " + post_id);
   console.log("sender: "  + sender);
   console.log("comment_id: " + comment_id);
-
+  sendText(sender, comment_id);
   console.log('Everything looks fine');
   res.sendStatus(200);
 });
+
+var token = "EAALp6npgAb0BADEZB6unhZCw4uZCerwQPC5OlcU13ixY5mXU0swqUh1muihCUdWBw7QUIj5uOffUjCDY3PyoSNjtJmOHQmFd59mif7SHDmE4w9nJG3LDYH8WvJRlnMltSxbhszVMsqbZAWZBDmi9CAt1P0qvnxMZAjo58WXesGOwZDZD";
+
+function sendText(sender_name, comment_id){
+    var  messageData = "hola " + sender_name + ". Por favor facilitanos tu correo para enviarte mas información.";
+    request({
+        url: "https://graph.facebook.com/" + comment_id + "/comments",
+        qs: {access_token: token},
+        method: "POST",
+        json: {
+            message: messageData
+        }
+    }, function (error, response, body) {
+        if(error){
+            console.log("sending error");
+        }else if(response.body.error){
+            console.log("response body error");
+       }
+        }
+    )
+}
 
 app.listen(app.get('port'), function(){
   console.log('running on port: ', app.get('port'))
